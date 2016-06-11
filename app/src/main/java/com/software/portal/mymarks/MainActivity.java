@@ -2,6 +2,8 @@ package com.software.portal.mymarks;
 
 import android.content.Intent;
 import android.os.Build;
+import android.os.SystemClock;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,10 +31,13 @@ public class MainActivity extends AppCompatActivity {
         pwd = intent.getStringExtra("pwd");
         userid = intent.getStringExtra("userid");
 
-        final String js = "javascript:" +
+        final String js1 = "javascript:" +
                 "document.getElementById('pwd').value = '" + pwd + "';"       +
                 "document.getElementById('userid').value = '" + userid + "';" +
                 "document.getElementById('login').submit();";
+
+        final String js2 = "javascript:" +
+                "document.getElementById('UP_DERIVED_SSR_SS_ENRL_APP_LINK').click()";
 
         mWeb = (WebView) findViewById(R.id.webView);
         mWeb.setWebViewClient(new WebViewClient() {
@@ -48,18 +53,32 @@ public class MainActivity extends AppCompatActivity {
                 if (view.getTitle().equals("Oracle PeopleSoft Sign-in")) {
                     //login page
                     if (Build.VERSION.SDK_INT >= 19) {
-                        view.evaluateJavascript(js, new ValueCallback<String>() {
+                        view.evaluateJavascript(js1, new ValueCallback<String>() {
                             @Override
                             public void onReceiveValue(String s) {
 
                             }
                         });
                     } else {
-                        view.loadUrl(js);
+                        view.loadUrl(js1);
+                    }
+                } else {
+                    if (Build.VERSION.SDK_INT >= 19) {
+                        view.evaluateJavascript(js2, new ValueCallback<String>() {
+                            @Override
+                            public void onReceiveValue(String s) {
+
+                            }
+                        });
+                    } else {
+                        view.loadUrl(js2);
                     }
                 }
             }
         });
+
+        mWeb.clearHistory();
+        mWeb.clearCache(true);
 
         WebSettings settings = mWeb.getSettings();
         settings.setJavaScriptEnabled(true);
