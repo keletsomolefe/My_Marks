@@ -18,11 +18,11 @@ public class UPPortal {
 
     private final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0";
     private final String BASE_URL = "https://upnet.up.ac.za/psp/pscsmpra/EMPLOYEE/HRMS/c/UP_SS_MENU.UP_SS_STUDENT.GBL";
-
+    private java.net.CookieManager cm;
     public UPPortal() {
         System.setProperty("jsse.enableSNIExtension", "false");
 
-        java.net.CookieManager cm = new java.net.CookieManager();
+        cm = new java.net.CookieManager();
         java.net.CookieHandler.setDefault(cm);
     }
 
@@ -106,7 +106,6 @@ public class UPPortal {
     public String getMarks(String studentNumber, String password) throws Exception {
         if (login(studentNumber, password)) {
             //GET ICSID
-            System.out.println("Logged in");
             URL obj = new URL("https://upnet.up.ac.za/psc/pscsmpra/EMPLOYEE/HRMS/c/UP_SS_MENU.UP_SS_STUDENT.GBL?PortalActualURL=https%3a%2f%2fupnet.up.ac.za%2fpsc%2fpscsmpra%2fEMPLOYEE%2fHRMS%2fc%2fUP_SS_MENU.UP_SS_STUDENT.GBL&PortalContentURL=https%3a%2f%2fupnet.up.ac.za%2fpsc%2fpscsmpra%2fEMPLOYEE%2fHRMS%2fc%2fUP_SS_MENU.UP_SS_STUDENT.GBL&PortalContentProvider=HRMS&PortalCRefLabel=UP%20Student%20Centre&PortalRegistryName=EMPLOYEE&PortalServletURI=https%3a%2f%2fupnet.up.ac.za%2fpsp%2fpscsmpra%2f&PortalURI=https%3a%2f%2fupnet.up.ac.za%2fpsc%2fpscsmpra%2f&PortalHostNode=HRMS&NoCrumbs=yes&PortalKeyStruct=yes");
             HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
             con.setRequestMethod("GET");
@@ -132,7 +131,6 @@ public class UPPortal {
             m = MY_PATTERN.matcher(s);
             m.find();
             s = m.group(1);
-            System.out.println("ICSID = " + s);
 
             //Request page with timetable
             obj = new URL(BASE_URL);
@@ -151,8 +149,6 @@ public class UPPortal {
             out.writeBytes(content);
             out.flush();
             out.close();
-
-            String cookie = con.getHeaderField("Set-Cookie");
 
             in = new BufferedReader(
                     new InputStreamReader(con.getInputStream()));
