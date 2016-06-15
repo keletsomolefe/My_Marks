@@ -3,6 +3,7 @@ package com.software.portal.mymarks;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -41,6 +42,9 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    public static final String PREFS_NAME = "file";
+    private static final String PREF_USERNAME = "username";
+    private static final String PREF_PASSWORD = "password";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,15 @@ public class LoginActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        SharedPreferences pref = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
+        String username = pref.getString(PREF_USERNAME, null);
+        String password = pref.getString(PREF_PASSWORD, null);
+
+        if (username!=null)
+            mSNumberView.setText(username);
+        if (password!=null)
+            mPasswordView.setText(password);
 
         Button mEmailSignInButton = (Button) findViewById(R.id.portal_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -86,6 +99,13 @@ public class LoginActivity extends AppCompatActivity {
         // Store values at the time of the login attempt.
         final String sNumber = mSNumberView.getText().toString();
         final String password = mPasswordView.getText().toString();
+
+        /*Store username and password for future use*/
+        getSharedPreferences(PREFS_NAME,MODE_PRIVATE)
+                .edit()
+                .putString(PREF_USERNAME, sNumber)
+                .putString(PREF_PASSWORD, password)
+                .commit();
 
         boolean cancel = false;
         View focusView = null;
