@@ -536,6 +536,12 @@ public class LoginActivity extends AppCompatActivity {
                 if (portal.login(sNumber, pwd)) {
                     publishProgress("Retrieving marks.");
                     result = portal.getMarks();
+                    if (result.startsWith("<?xml") == false) {
+                        result = portal.getMarks();
+                        if (result.startsWith("<?xml") == false) {
+                            result = portal.getMarks();
+                        }
+                    }
                 } else {
                     publishProgress("Loggin failed, check student number and password.");
                     return null;
