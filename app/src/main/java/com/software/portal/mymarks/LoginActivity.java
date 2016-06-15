@@ -24,6 +24,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -40,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         // UI references.
     private EditText mSNumberView;
     private EditText mPasswordView;
+    private CheckBox mSaveView;
     private View mProgressView;
     private View mLoginFormView;
     public static final String PREFS_NAME = "file";
@@ -52,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mSNumberView = (EditText) findViewById(R.id.sNumber);
+        mSaveView = (CheckBox) findViewById(R.id.checkRememeber);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -69,10 +72,11 @@ public class LoginActivity extends AppCompatActivity {
         String username = pref.getString(PREF_USERNAME, null);
         String password = pref.getString(PREF_PASSWORD, null);
 
-        if (username!=null)
+        if (username!=null && password!=null) {
+            mSaveView.setChecked(true);
             mSNumberView.setText(username);
-        if (password!=null)
             mPasswordView.setText(password);
+        }
 
         Button mEmailSignInButton = (Button) findViewById(R.id.portal_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -100,12 +104,20 @@ public class LoginActivity extends AppCompatActivity {
         final String sNumber = mSNumberView.getText().toString();
         final String password = mPasswordView.getText().toString();
 
+        if (mSaveView.isChecked()) {
         /*Store username and password for future use*/
-        getSharedPreferences(PREFS_NAME,MODE_PRIVATE)
-                .edit()
-                .putString(PREF_USERNAME, sNumber)
-                .putString(PREF_PASSWORD, password)
-                .commit();
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                    .edit()
+                    .putString(PREF_USERNAME, sNumber)
+                    .putString(PREF_PASSWORD, password)
+                    .commit();
+        } else {
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                    .edit()
+                    .remove(PREF_USERNAME)
+                    .remove(PREF_PASSWORD)
+                    .commit();
+        }
 
         boolean cancel = false;
         View focusView = null;
@@ -550,6 +562,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             if (result.startsWith("<?xml")) {
+                showProgress(false);
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 intent.putExtra("XML", result);
                 startActivity(intent);

@@ -63,6 +63,13 @@
 
             </android.support.design.widget.TextInputLayout>
 
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Remember me"
+                android:layout_gravity="center"
+                android:id="@+id/checkRememeber" />
+
             <Button
                 android:id="@+id/portal_sign_in_button"
                 style="?android:textAppearanceSmall"
