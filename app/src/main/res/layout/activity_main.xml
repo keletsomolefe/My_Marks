@@ -13,13 +13,12 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/scrollView"
-        android:layout_gravity="center_vertical" >
+        android:id="@+id/scrollView" >
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/linearLayout"></LinearLayout>
+            android:id="@+id/mark_display"></LinearLayout>
     </ScrollView>
 </LinearLayout>

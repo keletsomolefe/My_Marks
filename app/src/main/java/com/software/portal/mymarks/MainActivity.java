@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -25,26 +27,22 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<String[]> marks = portal.processXML(XML);
 
-        LinearLayout layout = (LinearLayout) findViewById(R.id.linearLayout);
-        TextView subject;
+        LinearLayout layout = (LinearLayout) findViewById(R.id.mark_display);
 
         for (int i = 0; i < marks.size(); i++) {
-            subject = new TextView(layout.getContext());
+            View mark_view = LayoutInflater.from(this).inflate(R.layout.mark_view, layout, false);
+
+            TextView textSubject = (TextView) mark_view.findViewById(R.id.textSubject);
+            TextView textMark = (TextView) mark_view.findViewById(R.id.textMark);
+
+            textSubject.setText(marks.get(i)[0]);
             if (marks.get(i)[5].equals("Grade Outstanding")) {
-                subject.setText(marks.get(i)[0] + "   [" + marks.get(i)[5] + "]");
+                textMark.setText("XX");
             } else {
-                subject.setText(marks.get(i)[0] + "   [" + marks.get(i)[4] + "]");
-            }
-            if (Build.VERSION.SDK_INT >= 23) {
-                subject.setTextAppearance(android.R.style.TextAppearance_Material_Medium);
-            } else {
-                subject.setTextAppearance(layout.getContext(), android.R.style.TextAppearance_Material_Medium);
+                textMark.setText(marks.get(i)[4]);
             }
 
-            layout.addView(subject);
+            layout.addView(mark_view);
         }
-
-
-
     }
 }

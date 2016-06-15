@@ -173,7 +173,7 @@ public class LoginActivity extends AppCompatActivity {
         private final String sNumber;
         private final String pwd;
         private UPPortal portal;
-        
+
         GetMarksTask(String _sNumber, String _pwd) {
             sNumber = _sNumber.substring(1);
             pwd = _pwd;
@@ -219,7 +219,7 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             } else {
                 showProgress(false);
-                Toast.makeText(getBaseContext(), "Application Failure.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "Failed to retrieve marks.", Toast.LENGTH_LONG).show();
             }
         }
     }
