@@ -533,22 +533,26 @@ public class LoginActivity extends AppCompatActivity {
 
             try {
                 publishProgress("Loggin in.");
-                if (portal.login(sNumber, pwd)) {
+                String loginAttemp = portal.login(sNumber, pwd);
+                if (loginAttemp.equals("Network")) {
+                    loginAttemp = portal.login(sNumber, pwd);
+                }
+
+                if (loginAttemp.equals("Success")) {
                     publishProgress("Retrieving marks.");
                     result = portal.getMarks();
                     if (result.startsWith("<?xml") == false) {
                         result = portal.getMarks();
-                        if (result.startsWith("<?xml") == false) {
-                            result = portal.getMarks();
-                        }
                     }
+                } else if (loginAttemp.equals("Network")) {
+                    publishProgress("Network error, Check Internet Connection.");
+                    return null;
                 } else {
-                    publishProgress("Loggin failed, check student number and password.");
+                    publishProgress(loginAttemp);
                     return null;
                 }
-
             } catch (Exception e) {
-                publishProgress("Permanant Failure, Check Internet Connection.");
+                publishProgress("Network error, Check Internet Connection.");
                 return null;
             } finally {
                 portal.logout();

@@ -18,6 +18,8 @@ public class UPPortal {
 
     private final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0";
     private final String BASE_URL = "https://upnet.up.ac.za/psp/pscsmpra/EMPLOYEE/HRMS/c/UP_SS_MENU.UP_SS_STUDENT.GBL";
+    private final String pError = "Your User ID and/or Password are invalid.";
+    private final String loginTrue = "<title>UP Student Centre</title>";
     private java.net.CookieManager cm;
 
     public UPPortal() {
@@ -69,7 +71,7 @@ public class UPPortal {
         con.connect();
     }
 
-    public boolean login(String studentNumber, String password) throws Exception {
+    public String login(String studentNumber, String password) throws Exception {
         getCookie();
 
         URL obj = new URL(BASE_URL);
@@ -101,7 +103,13 @@ public class UPPortal {
         in.close();
 
         String html = response.toString();
-        return html.contains(studentNumber);
+        if (html.contains(pError)) {
+            return pError;
+        } else if (html.contains(loginTrue)) {
+            return "Success";
+        } else {
+            return "Network";
+        }
     }
 
     public void logout() {
@@ -178,13 +186,5 @@ public class UPPortal {
         in.close();
 
         return response.toString();
-    }
-
-    public String getMarks(String studentNumber, String password) throws Exception {
-        if (login(studentNumber, password)) {
-            return getMarks();
-        } else {
-            return "Failed to log in";
-        }
     }
 }
