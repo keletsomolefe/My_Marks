@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.text.method.PasswordTransformationMethod;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,6 +27,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -44,9 +46,12 @@ public class LoginActivity extends AppCompatActivity {
     private CheckBox mSaveView;
     private View mProgressView;
     private View mLoginFormView;
+    private ImageButton mViewPassword;
     public static final String PREFS_NAME = "file";
     private static final String PREF_USERNAME = "username";
     private static final String PREF_PASSWORD = "password";
+    private boolean mPasswordVisible;
+    private boolean mVisibleAllowed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,15 +73,24 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        mViewPassword = (ImageButton) findViewById(R.id.imageButton);
+
         SharedPreferences pref = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
         String username = pref.getString(PREF_USERNAME, null);
         String password = pref.getString(PREF_PASSWORD, null);
 
-        if (username!=null && password!=null) {
+        mVisibleAllowed = true;
+
+        if (username!=null) {
             mSaveView.setChecked(true);
             mSNumberView.setText(username);
-            mPasswordView.setText(password);
+            if (password != null) {
+                mPasswordView.setText(password);
+                mVisibleAllowed = false;
+            }
         }
+
+        mPasswordVisible = false;
 
         Button mEmailSignInButton = (Button) findViewById(R.id.portal_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -90,6 +104,29 @@ public class LoginActivity extends AppCompatActivity {
         mProgressView = findViewById(R.id.login_progress);
     }
 
+    public void onClickViewPassword(View v) {
+        if (mPasswordVisible == false) {
+            mPasswordVisible = true;
+            if (mVisibleAllowed == false) {
+                mPasswordView.setText("");
+                mVisibleAllowed = true;
+            }
+            mPasswordView.setTransformationMethod(null);
+            mViewPassword.setImageResource(android.R.drawable.ic_secure);
+        } else {
+            mPasswordVisible = false;
+            mPasswordView.setTransformationMethod(new PasswordTransformationMethod());
+            mViewPassword.setImageResource(android.R.drawable.ic_partial_secure);
+        }
+    }
+
+    private void loginSuccess() {
+        mPasswordVisible = false;
+        mVisibleAllowed = false;
+        mPasswordView.setTransformationMethod(new PasswordTransformationMethod());
+        mViewPassword.setImageResource(android.R.drawable.ic_partial_secure);
+    }
+
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -99,6 +136,10 @@ public class LoginActivity extends AppCompatActivity {
         // Reset errors.
         mSNumberView.setError(null);
         mPasswordView.setError(null);
+
+        mPasswordVisible = false;
+        mPasswordView.setTransformationMethod(new PasswordTransformationMethod());
+        mViewPassword.setImageResource(android.R.drawable.ic_partial_secure);
 
         // Store values at the time of the login attempt.
         final String sNumber = mSNumberView.getText().toString();
@@ -573,6 +614,7 @@ public class LoginActivity extends AppCompatActivity {
 
             if (result.startsWith("<?xml")) {
                 showProgress(false);
+                loginSuccess();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 intent.putExtra("XML", result);
                 startActivity(intent);
