@@ -40,18 +40,22 @@ import android.widget.Toast;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity {
-        // UI references.
+    // UI references.
     private EditText mSNumberView;
     private EditText mPasswordView;
     private CheckBox mSaveView;
     private View mProgressView;
     private View mLoginFormView;
     private ImageButton mViewPassword;
+
+    // Password Visibility
+    private boolean mPasswordVisible;
+    private boolean mVisibleAllowed;
+
+    // Username and Password Storage
     public static final String PREFS_NAME = "file";
     private static final String PREF_USERNAME = "username";
     private static final String PREF_PASSWORD = "password";
-    private boolean mPasswordVisible;
-    private boolean mVisibleAllowed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,22 +79,27 @@ public class LoginActivity extends AppCompatActivity {
 
         mViewPassword = (ImageButton) findViewById(R.id.imageButton);
 
+        // Retrieve username and password from app storage
         SharedPreferences pref = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
         String username = pref.getString(PREF_USERNAME, null);
         String password = pref.getString(PREF_PASSWORD, null);
 
+        // Initial password visibility, password is not visible but user can make it visible
         mVisibleAllowed = true;
+        mPasswordVisible = false;
 
+        // Initialize form with saved data
         if (username!=null) {
             mSaveView.setChecked(true);
             mSNumberView.setText(username);
             if (password != null) {
                 mPasswordView.setText(password);
+                // Password should not be visible unless user decided to change it
                 mVisibleAllowed = false;
             }
         }
 
-        mPasswordVisible = false;
+
 
         Button mEmailSignInButton = (Button) findViewById(R.id.portal_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -111,16 +120,19 @@ public class LoginActivity extends AppCompatActivity {
                 mPasswordView.setText("");
                 mVisibleAllowed = true;
             }
+            // make password visible and change icon
             mPasswordView.setTransformationMethod(null);
             mViewPassword.setImageResource(android.R.drawable.ic_secure);
         } else {
             mPasswordVisible = false;
+            // make password invisible and change icon
             mPasswordView.setTransformationMethod(new PasswordTransformationMethod());
             mViewPassword.setImageResource(android.R.drawable.ic_partial_secure);
         }
     }
 
     private void loginSuccess() {
+        // hide password if login is successful
         mPasswordVisible = false;
         mVisibleAllowed = false;
         mPasswordView.setTransformationMethod(new PasswordTransformationMethod());
@@ -153,6 +165,7 @@ public class LoginActivity extends AppCompatActivity {
                     .putString(PREF_PASSWORD, password)
                     .commit();
         } else {
+            // clear username and password from device
             getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
                     .edit()
                     .remove(PREF_USERNAME)
@@ -573,12 +586,15 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             try {
+
+                // Login in to Portal
                 publishProgress("Loggin in.");
                 String loginAttemp = portal.login(sNumber, pwd);
                 if (loginAttemp.equals("Network")) {
                     loginAttemp = portal.login(sNumber, pwd);
                 }
 
+                // Retrieve marks
                 if (loginAttemp.equals("Success")) {
                     publishProgress("Retrieving marks.");
                     result = portal.getMarks();
@@ -612,6 +628,7 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
+            // Open MainActivity to display results
             if (result.startsWith("<?xml")) {
                 showProgress(false);
                 loginSuccess();

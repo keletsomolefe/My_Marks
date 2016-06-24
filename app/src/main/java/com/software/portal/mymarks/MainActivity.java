@@ -25,11 +25,13 @@ public class MainActivity extends AppCompatActivity {
         XML = intent.getStringExtra("XML");
         UPPortal portal = new UPPortal();
 
+        // Get Subject, mark pairs
         ArrayList<String[]> marks = portal.processXML(XML);
 
         LinearLayout layout = (LinearLayout) findViewById(R.id.mark_display);
 
         for (int i = 0; i < marks.size(); i++) {
+            // Create view for each subject, mark pair
             View mark_view = LayoutInflater.from(this).inflate(R.layout.mark_view, layout, false);
 
             TextView textSubject = (TextView) mark_view.findViewById(R.id.textSubject);
